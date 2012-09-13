@@ -1,13 +1,8 @@
 package org.BrokenWorlds.BookStats;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagString;
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.ConnectionFactoryBuilder;
 import net.spy.memcached.FailureMode;
@@ -17,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -57,7 +53,7 @@ public class BooksStatsMain extends JavaPlugin implements Listener {
         logger.log(Level.SEVERE, "[BookStats] Plugin Disabled!");
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (!event.getPlayer().hasPlayedBefore()) {
             store.storePlayerPVPKills(event.getPlayer().getName(), 0);
@@ -68,8 +64,29 @@ public class BooksStatsMain extends JavaPlugin implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (event.getEntity().getKiller() instanceof Player) {
             Player killer = event.getEntity().getKiller();
-            int kills = store.getPlayerPVPKills(killer.getName()) + 1;
-            store.storePlayerPVPKills(killer.getName(), kills);
+            Integer kills = store.getPlayerPVPKills(killer.getName());
+            store.storePlayerPVPKills(killer.getName(), kills.intValue() + 1);
+            if (killer.getItemInHand().getTypeId() == 387) {
+                ItemStack stack = killer.getItemInHand();
+                net.minecraft.server.ItemStack book = ((CraftItemStack) stack).getHandle();
+                if (book.tag.getString("title").equalsIgnoreCase("Bookstats")
+                        || book.tag.getString("title").equalsIgnoreCase(killer.getName() + "'s " + "Stats")
+                        && book.tag.getString("author").equalsIgnoreCase(killer.getName())) {
+                    CustomBook bi = new CustomBook(new ItemStack(387, 1));
+                    Integer kills2 = store.getPlayerPVPKills(killer.getName());
+                    String linebreak = "\n\247r\2470";
+                    String doublelinebreak = "\n\247r\2470\n\247r\2470";
+                    String[] pages = {"\2473" + killer.getName() + "\2472\247l Stats" + doublelinebreak
+                        + "\2474\247lWorld: \2475" + upperCaseFirst(killer.getWorld().getName()) + linebreak
+                        + "\2474\247lTotal Kills:" + "\2475 " + kills2.intValue()};
+                    bi.setPages(pages);
+                    bi.setAuthor(killer.getName());
+                    bi.setTitle(killer.getName() + "'s " + "Stats");
+                    ItemStack writtenbook = bi.getItemStack();
+                    killer.setItemInHand(writtenbook);
+                    killer.updateInventory();
+                }
+            }
         }
     }
 
@@ -85,12 +102,12 @@ public class BooksStatsMain extends JavaPlugin implements Listener {
                     || book.tag.getString("title").equalsIgnoreCase(player.getName() + "'s " + "Stats")
                     && book.tag.getString("author").equalsIgnoreCase(player.getName())) {
                 CustomBook bi = new CustomBook(new ItemStack(387, 1));
-                int kills = store.getPlayerPVPKills(player.getName());
+                Integer kills = store.getPlayerPVPKills(player.getName());
                 String linebreak = "\n\247r\2470";
                 String doublelinebreak = "\n\247r\2470\n\247r\2470";
                 String[] pages = {"\2473" + player.getName() + "\2472\247l Stats" + doublelinebreak
                     + "\2474\247lWorld: \2475" + upperCaseFirst(player.getWorld().getName()) + linebreak
-                    + "\2474\247lTotal Kills:\n" + "\2475 " + kills};
+                    + "\2474\247lTotal Kills:" + "\2475 " + kills.intValue()};
                 bi.setPages(pages);
                 bi.setAuthor(player.getName());
                 bi.setTitle(player.getName() + "'s " + "Stats");
@@ -111,12 +128,12 @@ public class BooksStatsMain extends JavaPlugin implements Listener {
                     || book.tag.getString("title").equalsIgnoreCase(player.getName() + "'s " + "Stats")
                     && book.tag.getString("author").equalsIgnoreCase(player.getName())) {
                 CustomBook bi = new CustomBook(new ItemStack(387, 1));
-                int kills = store.getPlayerPVPKills(player.getName());
+                Integer kills = store.getPlayerPVPKills(player.getName());
                 String linebreak = "\n\247r\2470";
                 String doublelinebreak = "\n\247r\2470\n\247r\2470";
                 String[] pages = {"\2473" + player.getName() + "\2472\247l Stats" + doublelinebreak
                     + "\2474\247lWorld: \2475" + upperCaseFirst(player.getWorld().getName()) + linebreak
-                    + "\2474\247lTotal Kills:\n" + "\2475 " + kills};
+                    + "\2474\247lTotal Kills:" + "\2475 " + kills.intValue()};
                 bi.setPages(pages);
                 bi.setAuthor(player.getName());
                 bi.setTitle(player.getName() + "'s " + "Stats");
@@ -137,12 +154,12 @@ public class BooksStatsMain extends JavaPlugin implements Listener {
                     || book.tag.getString("title").equalsIgnoreCase(player.getName() + "'s " + "Stats")
                     && book.tag.getString("author").equalsIgnoreCase(player.getName())) {
                 CustomBook bi = new CustomBook(new ItemStack(387, 1));
-                int kills = store.getPlayerPVPKills(player.getName());
+                Integer kills = store.getPlayerPVPKills(player.getName());
                 String linebreak = "\n\247r\2470";
                 String doublelinebreak = "\n\247r\2470\n\247r\2470";
                 String[] pages = {"\2473" + player.getName() + "\2472\247l Stats" + doublelinebreak
                     + "\2474\247lWorld: \2475" + upperCaseFirst(player.getWorld().getName()) + linebreak
-                    + "\2474\247lTotal Kills:\n" + "\2475 " + kills};
+                    + "\2474\247lTotal Kills:" + "\2475 " + kills.intValue()};
                 bi.setPages(pages);
                 bi.setAuthor(player.getName());
                 bi.setTitle(player.getName() + "'s " + "Stats");
@@ -153,34 +170,17 @@ public class BooksStatsMain extends JavaPlugin implements Listener {
         }
     }
 
-    public void setPages(net.minecraft.server.ItemStack item, String[] newpages) {
-        NBTTagCompound tags = item.tag;
-        if (tags == null) {
-            tags = item.tag = new NBTTagCompound();
-        }
-        NBTTagList pages = new NBTTagList("pages");
-        //we don't want to throw any errors if the book is blank!
-        if (newpages.length == 0) {
-            pages.add(new NBTTagString("1", ""));
-        } else {
-            for (int i = 0; i < newpages.length; i++) {
-                pages.add(new NBTTagString("" + i + "", newpages[i]));
-            }
-        }
-        tags.set("pages", pages);
-    }
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         Player player = (Player) sender;
         if (cmd.getName().equalsIgnoreCase("book")) {
             CustomBook bi = new CustomBook(new ItemStack(387, 1));
-            int kills = store.getPlayerPVPKills(player.getName());
+            Integer kills = store.getPlayerPVPKills(player.getName());
             String linebreak = "\n\247r\2470";
             String doublelinebreak = "\n\247r\2470\n\247r\2470";
             String[] pages = {"\2473" + player.getName() + "\2472\247l Stats" + doublelinebreak 
                     + "\2474\247lWorld: \2475" + upperCaseFirst(player.getWorld().getName()) + linebreak 
-                    + "\2474\247lTotal Kills:\n" + "\2475 " + kills};
+                    + "\2474\247lTotal Kills:" + "\2475 " + kills.intValue()};
             bi.setPages(pages);
             bi.setAuthor(player.getName());
             bi.setTitle(player.getName() + "'s " + "Stats");
@@ -196,10 +196,5 @@ public class BooksStatsMain extends JavaPlugin implements Listener {
         char[] stringArray = stringtext.toCharArray();
         stringArray[0] = Character.toUpperCase(stringArray[0]);
         return new String(stringArray);
-    }
-
-    public String convertToDate(long longtext) {
-        DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        return sdf.format(longtext).trim();
     }
 }
