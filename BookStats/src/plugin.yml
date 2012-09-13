@@ -1,0 +1,8 @@
+name: BookStats
+main: org.BrokenWorlds.BookStats.BooksStatsMain
+version: 1.0
+description: BookStats!
+commands:
+    book:
+        description: Gives you a stats book.
+        usage: /book
