@@ -1,0 +1,4 @@
+name: Water Walking
+main: org.BrokenWorlds.Water.WaterWalk
+version: 1.0
+description: Ability to walk on water
