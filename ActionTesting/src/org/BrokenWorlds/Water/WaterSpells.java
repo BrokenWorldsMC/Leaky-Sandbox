@@ -3,13 +3,13 @@ package org.BrokenWorlds.Water;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,29 +20,32 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import com.google.common.collect.Lists;
 
 public class WaterSpells implements Listener {
+	
+	private static final Logger logger = Logger.getLogger("Minecraft");
 
     private HashMap<String, WaterWalking> lilyWalkers = new HashMap<String, WaterWalking>();
+    private List<Block> flashFlooded = Lists.newArrayList();
     
     List<Block> blocks = Lists.newArrayList();
    	List<String> flashCasters = Lists.newArrayList();
     
-    private WaterWalking lilies = new WaterWalking();
-        
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (lilyWalkers.containsKey(event.getPlayer().getName())) {
-            Block block = event.getTo().getBlock();
-            boolean moved = lilies.isMoved(block);
-            if (moved) {
-                lilies.move(block);
-            }
-        }
-        if(event.getPlayer().getLocation().getBlock().hasMetadata("flashFlood")){
-        	event.getPlayer().setRemainingAir(0);
+    	WaterWalking lilies = lilyWalkers.get(event.getPlayer().getName());
+    	if (lilies != null) {
+    		Block block = event.getTo().getBlock();
+    	    boolean moved = lilies.isMoved(block);
+    		if (moved) {
+    	        	lilies.move(block);
+    		}
+    	}
+        if(event.getPlayer().getLocation().getBlock().hasMetadata("flashFlooded")){
+        	event.getPlayer().damage(1);
         }
     }
 
@@ -76,44 +79,21 @@ public class WaterSpells implements Listener {
         					player.sendMessage(ChatColor.YELLOW + "-- Flash Flood is on cooldown --");
         					return;
         				}
+        				
+        				//player.getTargetBlock(arg0, arg1)
         					
-        				String direction = getCardinalDirection(player);
-        				Location center = null;
-        				FlashFlood flashFlood = new FlashFlood();
-        				switch(direction){
-	        				case "N":
-	        					center = player.getLocation().getBlock().getRelative(BlockFace.NORTH, 8).getLocation();
-	        					break;
-	        				case "NE":
-	        					center = player.getLocation().getBlock().getRelative(BlockFace.NORTH_EAST, 8).getLocation();
-	        					break;
-	        				case "E":
-	        					center = player.getLocation().getBlock().getRelative(BlockFace.EAST, 8).getLocation();
-	        					break;
-	        				case "SE":
-	        					center = player.getLocation().getBlock().getRelative(BlockFace.SOUTH_EAST, 8).getLocation();
-	        					break;
-	        				case "S":
-	        					center = player.getLocation().getBlock().getRelative(BlockFace.SOUTH, 8).getLocation();
-	        					break;
-	        				case "SW":
-	        					center = player.getLocation().getBlock().getRelative(BlockFace.SOUTH_WEST, 8).getLocation();
-	        					break;
-	        				case "W":
-	        					center = player.getLocation().getBlock().getRelative(BlockFace.WEST, 8).getLocation();
-	        					break;
-	        				case "NW":
-	        					center = player.getLocation().getBlock().getRelative(BlockFace.NORTH_WEST, 8).getLocation();
-	        					break;
-        				}
+        				Block target = player.getTargetBlock(null, 8);
+        				
+        				Location center = target.getLocation();
         				// Now we create the sphere in the direction they casted the spell
         				if(center != null){
-        					blocks = flashFlood.makeSphere(center.getBlockX(), center.getBlockY(), center.getBlockZ(), 4, player);
+        					this.makeCircle(player, center, 2, 2, Material.STATIONARY_WATER, false, true, false);
+        					
         					addFlashCaster(player);
             	            Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
 
                                 public void run() {
-                                	removeFlashFlood(blocks);
+                                	removeFlashFlood(flashFlooded);
                                 }
                             }, 100L);
             	            Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
@@ -132,34 +112,6 @@ public class WaterSpells implements Listener {
         }
 
     }
-    
-    public static String getCardinalDirection(Player player) {
-        double rotation = (player.getLocation().getYaw() - 90) % 360;
-        if (rotation < 0) {
-            rotation += 360.0;
-        }
-         if (0 <= rotation && rotation < 22.5) {
-            return "N";
-        } else if (22.5 <= rotation && rotation < 67.5) {
-            return "NE";
-        } else if (67.5 <= rotation && rotation < 112.5) {
-            return "E";
-        } else if (112.5 <= rotation && rotation < 157.5) {
-            return "SE";
-        } else if (157.5 <= rotation && rotation < 202.5) {
-            return "S";
-        } else if (202.5 <= rotation && rotation < 247.5) {
-            return "SW";
-        } else if (247.5 <= rotation && rotation < 292.5) {
-            return "W";
-        } else if (292.5 <= rotation && rotation < 337.5) {
-            return "NW";
-        } else if (337.5 <= rotation && rotation < 360.0) {
-            return "N";
-        } else {
-            return null;
-        }
-    }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
@@ -173,13 +125,14 @@ public class WaterSpells implements Listener {
         }
     }
     
-    public void removeFlashFlood(List<Block> blocks2) {
-    	ListIterator<Block> it = blocks2.listIterator();
+    public void removeFlashFlood(List<Block> flood) {
+    	ListIterator<Block> it = flood.listIterator();
     	while(it.hasNext()) {
     		Block next = it.next();
     		next.setType(Material.AIR);
-    		//blocks2.remove(next);
+    		next.removeMetadata("flashFlooded", Bukkit.getPluginManager().getPlugin("SkillTesting"));
     	}
+    	flood.clear();
     }
     
     public void addFlashCaster(Player player){
@@ -193,7 +146,6 @@ public class WaterSpells implements Listener {
 
     public void removePlayer(Player player) {
         if (lilyWalkers.containsKey(player.getName())) {
-            lilies.remove();
             lilyWalkers.remove(player.getName());
             player.sendMessage(ChatColor.YELLOW + "-- Water walking deactivated --");
         }
@@ -201,14 +153,36 @@ public class WaterSpells implements Listener {
 
     public void addPlayer(Player player) {
         if (!lilyWalkers.containsKey(player.getName())) {
-            lilies.move(player.getLocation().getBlock());
-            lilyWalkers.put(player.getName(), lilies);
+            lilyWalkers.put(player.getName(), new WaterWalking());
             player.sendMessage(ChatColor.GREEN
                     + "-- Water walking activated --");
         } else {
             player.sendMessage(ChatColor.RED
                     + "-- Water walk already enabled --");
         }
+    }
+    
+    public boolean makeCircle(Player player, Location loc, Integer r, Integer h, Material m, Boolean hollow, Boolean sphere, Boolean tele) {
+        int cx = loc.getBlockX();
+        int cy = loc.getBlockY();
+        int cz = loc.getBlockZ();
+        
+        for (int x = cx - r; x <= cx +r; x++)
+            for (int z = cz - r; z <= cz +r; z++)
+                for (int y = (sphere ? cy - r : cy); y < (sphere ? cy + r : cy + h); y++) {
+                    double dist = (cx - x) * (cx - x) + (cz - z) * (cz - z) + (sphere ? (cy - y) * (cy - y) : 0);
+                    if (dist < r*r && !(hollow && dist < (r-1)*(r-1))) {
+                        Block temp = loc.getWorld().getBlockAt(x, y, z);
+                        if(temp.getType() == Material.AIR){
+                        	flashFlooded.add(temp);
+                        		temp.setType(m);
+                        		temp.setMetadata("flashFlooded", new FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SkillTesting"), "flashFlood"));
+                        }
+                        		
+                    }
+                }
+        if (tele) player.teleport(player.getWorld().getHighestBlockAt(player.getLocation()).getLocation());
+        return true;
     }
 
 }
