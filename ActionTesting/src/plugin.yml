@@ -1,4 +1,4 @@
-name: Water Walking
-main: org.BrokenWorlds.Water.WaterWalk
+name: SkillTesting
+main: org.BrokenWorlds.SkillTesting
 version: 1.0
-description: Ability to walk on water
+description: Testing skills for Broken Worlds
