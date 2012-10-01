@@ -5,6 +5,7 @@ import org.BrokenWorlds.BardicMusic.Fair;
 import org.BrokenWorlds.BardicMusic.Mellow;
 import org.BrokenWorlds.BardicMusic.Stall;
 import org.BrokenWorlds.BardicMusic.Strategy;
+import org.BrokenWorlds.Telekinetic.Vortex;
 import org.BrokenWorlds.Water.CleansingWater;
 import org.BrokenWorlds.Water.FlashFloods;
 import org.BrokenWorlds.Water.WaterWalk;
@@ -22,6 +23,7 @@ public class SkillTesting extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new Mellow(), this);
         getServer().getPluginManager().registerEvents(new Stall(), this);
         getServer().getPluginManager().registerEvents(new Strategy(), this);
+        getServer().getPluginManager().registerEvents(new Vortex(), this);
     }
 
     @Override

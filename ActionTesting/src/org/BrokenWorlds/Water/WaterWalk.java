@@ -50,15 +50,13 @@ public class WaterWalk implements Listener {
         String title = ((CraftItemStack) item).getHandle().tag.getString("title");
         	if(title.equals("Waterwalking")){
         		if (player.getLocation().getBlock().isLiquid()){
-                             player.sendMessage(ChatColor.RED
-                                        + "Can't water walk when standing in water!");
-                        addPlayer(player);
-                        Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
-
-                            public void run() {
-                                removePlayer(player);
-                            }
-                        }, 1200L);
+        		    player.sendMessage(ChatColor.RED + "Can't water walk when standing in water!");
+                    addPlayer(player);
+                    Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
+                        public void run() {
+                            removePlayer(player);
+                        }
+                    }, 1200L);
                 }
         	}
         }
@@ -90,11 +88,9 @@ public class WaterWalk implements Listener {
             Lilies lilies = new Lilies();
             lilies.move(player.getLocation().getBlock());
             lilywalkers.put(player.getName(), lilies);
-            player.sendMessage(ChatColor.GREEN
-                    + "-- Water walking activated --");
+            player.sendMessage(ChatColor.GREEN + "-- Water walking activated --");
         } else {
-            player.sendMessage(ChatColor.RED
-                    + "-- Water walk already enabled --");
+            player.sendMessage(ChatColor.RED + "-- Water walk already enabled --");
         }
     }
 
