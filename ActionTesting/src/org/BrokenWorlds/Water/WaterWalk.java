@@ -46,12 +46,10 @@ public class WaterWalk implements Listener {
         
         ItemStack item = player.getItemInHand();
         String sItem = item.getType().name();
+        if(sItem.equals("WRITTEN_BOOK")) {
         String title = ((CraftItemStack) item).getHandle().tag.getString("title");
-        switch(sItem) {
-            case "WRITTEN_BOOK":
-                switch(title){
-                    case "Waterwalking":
-                        if (player.getLocation().getBlock().isLiquid())
+        	if(title.equals("Waterwalking")){
+        		if (player.getLocation().getBlock().isLiquid()){
                              player.sendMessage(ChatColor.RED
                                         + "Can't water walk when standing in water!");
                         addPlayer(player);
@@ -61,8 +59,8 @@ public class WaterWalk implements Listener {
                                 removePlayer(player);
                             }
                         }, 1200L);
-                        break;
                 }
+        	}
         }
     }
 

@@ -9,6 +9,7 @@ public class SkillTesting extends JavaPlugin {
     public void onEnable() {
         getServer().getPluginManager().registerEvents(new FlashFloods(), this);
         getServer().getPluginManager().registerEvents(new WaterWalk(), this);
+        getServer().getPluginManager().registerEvents(new CleansingWater(), this);
     }
 
     @Override
