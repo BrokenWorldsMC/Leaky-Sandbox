@@ -47,15 +47,17 @@ public class CleansingWater implements Listener {
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player) {
-            Player damagee = (Player) event.getEntity();
-            Player damager = (Player) event.getDamager();
-            ItemStack item = damager.getItemInHand();
-            String sItem = item.getType().name();
-            if (sItem.equals("WRITTEN_BOOK")) {
-                String title = ((CraftItemStack) item).getHandle().tag.getString("title");
-                if (title.equals("Cleansing Waters")) {
-                    cleanPlayer(damagee);
-                    event.setCancelled(true);
+            if (event.getDamager() instanceof Player) {
+                Player damagee = (Player) event.getEntity();
+                Player damager = (Player) event.getDamager();
+                ItemStack item = damager.getItemInHand();
+                String sItem = item.getType().name();
+                if (sItem.equals("WRITTEN_BOOK")) {
+                    String title = ((CraftItemStack) item).getHandle().tag.getString("title");
+                    if (title.equals("Cleansing Waters")) {
+                        cleanPlayer(damagee);
+                        event.setCancelled(true);
+                    }
                 }
             }
         }
