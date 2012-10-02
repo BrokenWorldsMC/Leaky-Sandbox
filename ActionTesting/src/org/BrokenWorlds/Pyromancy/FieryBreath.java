@@ -4,6 +4,4 @@ import org.bukkit.event.Listener;
 
 public class FieryBreath implements Listener {
 
-	
-	
 }

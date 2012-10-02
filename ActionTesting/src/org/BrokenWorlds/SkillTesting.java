@@ -6,6 +6,7 @@ import org.BrokenWorlds.BardicMusic.Mellow;
 import org.BrokenWorlds.BardicMusic.Stall;
 import org.BrokenWorlds.BardicMusic.Strategy;
 import org.BrokenWorlds.Pyromancy.FireCircle;
+import org.BrokenWorlds.Pyromancy.Meteor;
 import org.BrokenWorlds.Telekinetic.KineticShield;
 import org.BrokenWorlds.Telekinetic.Skip;
 import org.BrokenWorlds.Telekinetic.StasisField;
@@ -32,6 +33,7 @@ public class SkillTesting extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new StasisField(), this);
         getServer().getPluginManager().registerEvents(new KineticShield(), this);
         getServer().getPluginManager().registerEvents(new FireCircle(), this);
+        getServer().getPluginManager().registerEvents(new Meteor(), this);
     }
 
     @Override

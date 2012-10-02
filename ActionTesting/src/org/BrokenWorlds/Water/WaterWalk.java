@@ -41,16 +41,16 @@ public class WaterWalk implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
         Action action = event.getAction();
-        if(!action.toString().equals("LEFT_CLICK_AIR") && !action.toString().equals("LEFT_CLICK_BLOCK"))
+        if (!action.toString().equals("LEFT_CLICK_AIR") && !action.toString().equals("LEFT_CLICK_BLOCK"))
             return;
-        
+
         ItemStack item = player.getItemInHand();
         String sItem = item.getType().name();
-        if(sItem.equals("WRITTEN_BOOK")) {
-        String title = ((CraftItemStack) item).getHandle().tag.getString("title");
-        	if(title.equals("Waterwalking")){
-        		if (player.getLocation().getBlock().isLiquid()){
-        		    player.sendMessage(ChatColor.RED + "Can't water walk when standing in water!");
+        if (sItem.equals("WRITTEN_BOOK")) {
+            String title = ((CraftItemStack) item).getHandle().tag.getString("title");
+            if (title.equals("Waterwalking")) {
+                if (player.getLocation().getBlock().isLiquid()) {
+                    player.sendMessage(ChatColor.RED + "Can't water walk when standing in water!");
                     addPlayer(player);
                     Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
                         public void run() {
@@ -58,7 +58,7 @@ public class WaterWalk implements Listener {
                         }
                     }, 1200L);
                 }
-        	}
+            }
         }
     }
 

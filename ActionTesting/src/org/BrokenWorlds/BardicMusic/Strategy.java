@@ -11,11 +11,10 @@ import com.google.common.collect.Lists;
 
 public class Strategy implements Listener {
 
-	public List<Entity> nearBy = Lists.newArrayList();
+    public List<Entity> nearBy = Lists.newArrayList();
 
-	@EventHandler
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		// TODO: Coming soon, deals with Mana Regeneration!
-	}
-	
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        // TODO: Coming soon, deals with Mana Regeneration!
+    }
 }
