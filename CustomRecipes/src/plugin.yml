@@ -1,0 +1,4 @@
+name: BrokenWorldsRecipes
+main: org.BrokenWorlds.Recipes.RecipesMain
+version: 1.0
+description: Recipes for Broken Worlds!

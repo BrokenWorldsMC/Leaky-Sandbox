@@ -1,0 +1,28 @@
+# Materials list - http://jd.bukkit.org/apidocs/org/bukkit/Material.html
+#
+# Example of item craft
+#
+# Recipes:
+#   MeteorStormSkill:
+#     Output: WRITTEN_BOOK
+#     Amount: 1 
+#     /\ Can remove and will default to 1
+#     Make Sure to add Durability and Title for correct book! Also Can remove theses if not a book!
+#     BookDurability: 1
+#     BookTitle: Meteor
+#     BookAuthor: BrokenWorlds
+#     BookPages: BrokenWorlds Meteor&pagePage Test
+#     /\ Add &page to put text to next page!
+#     Characters:
+#     - A
+#     - B
+#     - C
+#     - D
+#     CharactersMaterials:
+#     - EMERALD
+#     - GOLD_BLOCK
+#     - FIREBALL
+#     - BOOK_AND_QUILL
+#     TopRow: ABA
+#     Middle: CDC
+#     Bottom: ABA
