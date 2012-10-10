@@ -1,5 +1,6 @@
 package org.BrokenWorlds.Pyromancy;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -27,13 +28,50 @@ public class Meteor implements Listener {
         String sItem = item.getType().name();
         if (sItem.equals("WRITTEN_BOOK")) {
             String title = ((CraftItemStack) item).getHandle().tag.getString("title");
-            if (title.equals("Meteor"))
-                fireMeteor(event.getPlayer());
+            if (title.equals("Meteor")){
+                final Block target = player.getTargetBlock(null, 15);
+                fireMeteor(player, target);
+                Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
+                    
+                    public void run() {
+                        fireMeteor(player, target);
+                    }
+                }, 5L);
+                Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
+                    
+                    public void run() {
+                        fireMeteor(player, target);
+                    }
+                }, 10L);
+                Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
+                    
+                    public void run() {
+                        fireMeteor(player, target);
+                    }
+                }, 15L);
+                Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
+                    
+                    public void run() {
+                        fireMeteor(player, target);
+                    }
+                }, 20L);
+                Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
+                    
+                    public void run() {
+                        fireMeteor(player, target);
+                    }
+                }, 25L);
+                Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
+                    
+                    public void run() {
+                        fireMeteor(player, target);
+                    }
+                }, 30L);
+            }
         }
     }
     
-    public void fireMeteor(Player shooter) {
-        Block target = shooter.getTargetBlock(null, 15);
+    public void fireMeteor(Player shooter, Block target) {
         Location center = target.getLocation();
         if (center != null) {
             Location targetLoc = target.getLocation();
@@ -46,16 +84,6 @@ public class Meteor implements Listener {
             fireball.setBounce(false);
             fireball.setIsIncendiary(true);
             fireball.setShooter(shooter);
-            
-            Location location2 = new Location(shooter.getWorld(), targetLoc.getX() + 1, 120, targetLoc.getZ() + 1);
-            location2.setPitch(90.0f);
-            location2.setYaw(0.0f);
-            
-            Fireball fireball2 = shooter.getWorld().spawn(location2, Fireball.class);
-            fireball2.setVelocity(new Vector(0,-1.0,0));
-            fireball2.setBounce(false);
-            fireball2.setIsIncendiary(true);
-            fireball2.setShooter(shooter);
         }else{
             shooter.sendMessage("Can not cast there!");
         }

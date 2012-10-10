@@ -51,6 +51,7 @@ public class WaterWalk implements Listener {
             if (title.equals("Waterwalking")) {
                 if (player.getLocation().getBlock().isLiquid()) {
                     player.sendMessage(ChatColor.RED + "Can't water walk when standing in water!");
+                }else{
                     addPlayer(player);
                     Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(Bukkit.getPluginManager().getPlugin("SkillTesting"), new Runnable() {
                         public void run() {
