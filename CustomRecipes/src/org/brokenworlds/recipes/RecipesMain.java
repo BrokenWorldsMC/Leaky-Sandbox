@@ -1,18 +1,17 @@
 package org.brokenworlds.recipes;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class RecipesMain extends JavaPlugin implements Listener {
@@ -22,9 +21,8 @@ public class RecipesMain extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         loadConfiguration();
-        Bukkit.getServer().getPluginManager().registerEvents(this, this);
         AddRecipes();
-        logger.info("[BrokenWorldsRecipes] has been enabled!");
+        logger.info("[BrokenWorlds Recipes] has been enabled!");
     }
 
     public void loadConfiguration() {
@@ -34,87 +32,76 @@ public class RecipesMain extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        logger.info("[BrokenWorldsRecipes] has been disabled!");
-    }
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        Set<String> recipes = getConfig().getConfigurationSection("Recipes").getKeys(false);
-        if (player.getItemInHand().getTypeId() == 387 && player.getItemInHand().getDurability() >= 1) {
-            if (recipes != null) {
-                for (String key : recipes) {
-                    String bookdura = getConfig().getString("Recipes." + key + ".BookDurability");
-                    if (bookdura != null) {
-                        if (player.getItemInHand().getDurability() == Short.parseShort(bookdura)) {
-                            Material mat1 = Material.getMaterial(getConfig().getString("Recipes." + key + ".Output"));
-                            if (mat1 == Material.WRITTEN_BOOK) {
-                                String booktitle = getConfig().getString("Recipes." + key + ".BookTitle");
-                                String bookauthor = getConfig().getString("Recipes." + key + ".BookAuthor");
-                                String bookpage = getConfig().getString("Recipes." + key + ".BookPages");
-                                String outnum = getConfig().getString("Recipes." + key + ".Amount");
-                                CustomBook custombook;
-                                if (outnum != null) {
-                                    custombook = new CustomBook(new ItemStack(387, Integer.parseInt(outnum)));
-                                } else {
-                                    custombook = new CustomBook(new ItemStack(387, 1));
-                                }
-                                if (booktitle != null) {
-                                    custombook.setTitle(booktitle.trim());
-                                }
-                                if (bookauthor != null) {
-                                    custombook.setAuthor(bookauthor.trim());
-                                }
-                                if (bookpage != null) {
-                                    String[] booktitlearray = bookpage.split("(?i)&page");
-                                    custombook.setPages(booktitlearray);
-                                }
-                                ItemStack writtenbook = custombook.getItemStack();
-                                player.setItemInHand(writtenbook);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        logger.info("[BrokenWorlds Recipes] has been disabled!");
     }
 
     public void AddRecipes() {
         ConfigurationSection recipes = getConfig().getConfigurationSection("Recipes");
-        if (recipes != null)
+        if (recipes != null) {
             for (String key : recipes.getKeys(false)) {
-                Material mat1 = Material.getMaterial(getConfig().getString("Recipes." + key + ".Output"));
-                String outnum = getConfig().getString("Recipes." + key + ".Amount");
-                ItemStack itemstack;
-                if (outnum != null) {
-                    itemstack = new ItemStack(mat1, Integer.parseInt(outnum));
+                Material material = Material.getMaterial(getConfig().getString("Recipes." + key + ".Output"));
+                Integer amountNumber = getConfig().getInt("Recipes." + key + ".Amount");
+                ItemStack itemStack;
+
+                if (amountNumber != null) {
+                    itemStack = new ItemStack(material, amountNumber);
                 } else {
-                    itemstack = new ItemStack(mat1, 1);
+                    itemStack = new ItemStack(material, 1);
                 }
-                String bookdura = new String();
-                bookdura = getConfig().getString("Recipes." + key + ".BookDurability");
-                
-                if (bookdura != null) {
-                    itemstack.setDurability(Short.parseShort(getConfig().getString("Recipes." + key + ".BookDurability").toString()));
+
+                if (material == Material.WRITTEN_BOOK) {
+                    String bookAuthor = getConfig().getString("Recipes." + key + ".BookAuthor");
+                    String bookPages = getConfig().getString("Recipes." + key + ".BookPages");
+                    BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
+
+                    if (bookAuthor != null) {
+                        bookMeta.setAuthor(ChatColor.translateAlternateColorCodes('&', bookAuthor));
+                    } else {
+                        bookMeta.setAuthor("");
+                    }
+
+                    if (bookPages != null) {
+                        String[] bookPageArray = ChatColor.translateAlternateColorCodes('&', bookPages).split("&p");
+                        bookMeta.setPages(bookPageArray);
+                    } else {
+                        bookMeta.setPages("");
+                    }
+
+                    itemStack.setItemMeta(bookMeta);
+                }
+
+                String displayName = getConfig().getString("Recipes." + key + ".DisplayName");
+
+                if (displayName != null) {
+                    ItemMeta meta = itemStack.getItemMeta();
+                    meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayName));
+                    itemStack.setItemMeta(meta);
                 }
 
                 String shape1 = getConfig().getString("Recipes." + key + ".TopRow");
                 String shape2 = getConfig().getString("Recipes." + key + ".Middle");
                 String shape3 = getConfig().getString("Recipes." + key + ".Bottom");
 
-                ShapedRecipe recipe = new ShapedRecipe(itemstack);
-                recipe.shape(new String[] { shape1, shape2, shape3 });
+                if (shape1 != null && shape2 != null && shape3 != null) {
+                    ShapedRecipe recipe = new ShapedRecipe(itemStack);
+                    recipe.shape(shape1, shape2, shape3);
 
-                List<String> Characterslist = getConfig().getStringList("Recipes." + key + ".Characters");
+                    List<String> charactersList = getConfig().getStringList("Recipes." + key + ".Characters");
 
-                List<String> CharactersMaterials = getConfig().getStringList("Recipes." + key + ".CharactersMaterials");
+                    if (charactersList != null) {
+                        List<String> charactersMaterials = getConfig().getStringList("Recipes." + key + ".CharactersMaterials");
 
-                for (int id = 0; (id < Characterslist.size()) && (id < CharactersMaterials.size()); id++) {
-                    recipe.setIngredient(((String) Characterslist.get(id)).charAt(0), Material.getMaterial((String) CharactersMaterials.get(id)));
+                        if (charactersMaterials != null) {
+                            for (int id = 0; (id < charactersList.size()) && (id < charactersMaterials.size()); id++) {
+                                recipe.setIngredient((charactersList.get(id)).charAt(0), Material.getMaterial(charactersMaterials.get(id)));
+                            }
+
+                            getServer().addRecipe(recipe);
+                            // logger.info("Added recipe " + key);
+                        }
+                    }
                 }
-
-                getServer().addRecipe(recipe);
-                // logger.info("Added recipe " + key);
             }
+        }
     }
 }
