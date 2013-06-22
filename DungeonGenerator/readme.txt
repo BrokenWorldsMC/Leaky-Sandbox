@@ -1,0 +1,1 @@
+Needs the jnbt-1.1.jar (http://jnbt.sourceforge.net/) to be compiled into the jar to work properly if the jnbt-1.1.jar isn't in the plugin data folder.

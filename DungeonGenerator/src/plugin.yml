@@ -1,0 +1,10 @@
+name: DungeonGenerator
+main: org.BrokenWorlds.DungeonGenerator.DungeonGeneratorMain
+version: 1.0
+commands:
+   dungeongenerator:
+      description: dungeongenerator
+      usage: /dungeongenerator test <tileset> <tilename> [<x> <y> <z>]
+   tilesets:
+      description: tilesets :)
+      usage: /tilesets <list|reload|save|create <name>|addtile <tileset> <tilename>>
