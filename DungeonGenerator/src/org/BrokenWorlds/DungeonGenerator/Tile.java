@@ -13,6 +13,7 @@ public class Tile {
     private Integer length;
     private int entrances;
     private Biome biome;
+    private Integer probability;
 
     public boolean isRotatedCopy = false;
 
@@ -39,6 +40,7 @@ public class Tile {
         this.length = copy.length;
         this.entrances = copy.entrances;
         this.biome = copy.biome;
+        this.probability = copy.probability;
     }
 
 
@@ -169,6 +171,18 @@ public class Tile {
 
     public Biome getBiome() {
         return biome;
+    }
+
+    public void setProbability(Integer probability) {
+        this.probability = probability;
+    }
+
+    public Integer getProbability() {
+        return probability;
+    }
+
+    public int getRealProbability() {
+        return probability == null ? 1 : probability;
     }
 
     public boolean isRotatedCopy() {

@@ -80,6 +80,7 @@ public class TileSet {
             tJson.length = t.getLength();
             tJson.entrances = t.getEntrancesString();
             tJson.biome = t.getBiome() == null ? null : t.getBiome().name();
+            tJson.probability = t.getProbability();
             jsonTiles.add(tJson);
         }
         json.tiles = jsonTiles.toArray(new TileJson[jsonTiles.size()]);
@@ -126,6 +127,7 @@ public class TileSet {
                 tile.setLength(t.length);
                 tile.setEntrances(t.entrances);
                 tile.setBiome(t.biome == null ? null : Biome.valueOf(t.biome));
+                tile.setProbability(t.probability);
                 tileset.tiles.add(tile);
 
                 if(!tile.hasEntrance(Tile.ENTRANCE_ALL)) {
@@ -192,5 +194,6 @@ public class TileSet {
         public Integer length = null;
         public String entrances = "NSWE";
         public String biome = null;
+        public Integer probability = null;
     }
 }

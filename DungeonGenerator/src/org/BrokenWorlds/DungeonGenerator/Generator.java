@@ -125,7 +125,20 @@ public class Generator {
             System.out.println("Couldn't find matching tile for ("+x+"|"+z+") " + entrances + ";" + ignoredEntrances);
             return null;
         }
-        return matchingTiles.get(random.nextInt(matchingTiles.size()));
+        return pickRandomTile(matchingTiles);
+    }
+
+    private Tile pickRandomTile(List<Tile> tiles) {
+        int sum = 0;
+        for(Tile t : tiles) sum += t.getRealProbability();
+        int randomValue = random.nextInt(sum);
+        sum = 0;
+        for(Tile t : tiles) {
+            if(sum + t.getRealProbability() > randomValue && sum <= randomValue)
+                return t;
+            sum += t.getRealProbability();
+        }
+        return tiles.get(tiles.size()-1);
     }
 
     private Tile getTileAt(int x, int z) {
