@@ -118,7 +118,14 @@ public class DungeonGeneratorMain extends JavaPlugin {
         }
         TileSet tileSet = tileSets.get(tileSetName);
         Generator generator = new Generator(((Player) sender).getWorld(), tileSet);
-        if(generator.generate()) {
+
+        boolean generated;
+        if(args.length >= 3)
+            generated = generator.generate(args[2].hashCode());
+        else
+            generated = generator.generate();
+
+        if(generated) {
             sender.sendMessage("generated!");
         } else {
             sender.sendMessage("ERROR: couldn't find fitting tiles for all places :(");

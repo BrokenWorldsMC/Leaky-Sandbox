@@ -24,7 +24,15 @@ public class TileSet {
     }
 
     public void addTile(String name) {
-        tiles.add(new Tile(this, name));
+        Tile tile = new Tile(this, name);
+        tiles.add(tile);
+
+        if(!tile.hasEntrance(Tile.ENTRANCE_ALL)) {
+            Tile[] rotatedCopies = tile.getRotatedCopies();
+            tiles.add(rotatedCopies[0]);
+            tiles.add(rotatedCopies[1]);
+            tiles.add(rotatedCopies[2]);
+        }
     }
 
     public Tile getTile(String name) {

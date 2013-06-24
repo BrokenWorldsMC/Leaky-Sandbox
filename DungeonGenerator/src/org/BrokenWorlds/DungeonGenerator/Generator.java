@@ -35,6 +35,12 @@ public class Generator {
     }
 
     public boolean generate() {
+        return generate(System.nanoTime());
+    }
+
+    public boolean generate(long seed) {
+        random = new Random(seed);
+
         for(Tile t : tileSet.getTiles()) {
             System.out.println(t.getEntrancesString() + ":" + t.getName());
         }
