@@ -58,8 +58,11 @@ public class DungeonGeneratorMain extends JavaPlugin {
                 return true;
             }
 
-            if(args[0] == "test")
+            if(args[0].equalsIgnoreCase("test"))
                 return commandTest(sender, cmd, label, args);
+            else if(args[0].equalsIgnoreCase("gen")) {
+                return commandGenerate(sender, cmd, label, args);
+            }
             else
                 sender.sendMessage("ERROR: Unknown sub command! Usage: " + cmd.getUsage());
             return true;
@@ -96,6 +99,33 @@ public class DungeonGeneratorMain extends JavaPlugin {
         return false;
     }
 
+    private boolean commandGenerate(CommandSender sender, Command cmd, String label, String[] args) {
+        //has to be player
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("ERROR: You must be a player!");
+            return true;
+        }
+        if(args.length < 2) {
+            sender.sendMessage("ERROR: Not enough parameters! Usage: " + cmd.getUsage());
+            return true;
+        }
+
+        String tileSetName = args[1];
+
+        if(!tileSets.containsKey(tileSetName)) {
+            sender.sendMessage("TileSet '"+tileSetName+"' doesn't exist!");
+            return true;
+        }
+        TileSet tileSet = tileSets.get(tileSetName);
+        Generator generator = new Generator(((Player) sender).getWorld(), tileSet);
+        if(generator.generate()) {
+            sender.sendMessage("generated!");
+        } else {
+            sender.sendMessage("ERROR: couldn't find fitting tiles for all places :(");
+        }
+        return true;
+    }
+
     private boolean commandTest(CommandSender sender, Command cmd, String label, String[] args) {
         //has to be player
         if (!(sender instanceof Player)) {
@@ -126,7 +156,7 @@ public class DungeonGeneratorMain extends JavaPlugin {
 
         World world = ((Player)sender).getWorld();
         Location location = new Location(world, 0, 100, 0);
-        schematic.pasteTo(location);
+        schematic.pasteTo(location, Helper.Rotation.Rotate0);
 
         return true;
 

@@ -51,15 +51,19 @@ public class SchematicFile {
         return tag;
     }
 
-    public void pasteTo(Location location) {
+    public void pasteTo(Location location, Helper.Rotation rotation) {
         World world = location.getWorld();
+
+        int wX = location.getBlockX();
+        int wY = location.getBlockY();
+        int wZ = location.getBlockZ();
 
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 for(int z = 0; z < length; z++) {
-                    Block b = world.getBlockAt(location.getBlockX() + x, location.getBlockY() + y, location.getBlockZ() + z);
+                    Block b = world.getBlockAt(wX + x, wY + y, wZ + z);
 
-                    int index = getBlockIndex(x,y,z);
+                    int index = getBlockIndex(x,y,z, rotation);
                     b.setTypeIdAndData(blocks[index], data[index], false);
                 }
             }
@@ -68,8 +72,16 @@ public class SchematicFile {
         //TODO: Paste TileEntities.
     }
 
-    private int getBlockIndex(int x, int y, int z)
+    private int getBlockIndex(int x, int y, int z, Helper.Rotation rotation)
     {
-        return y * width * length + z * width + x;
+        if(rotation == Helper.Rotation.Rotate0)
+            return y * width * length + z * width + x;
+        if(rotation == Helper.Rotation.Rotate90)
+            return y * width * length + (length - 1 - x) * width + z;
+        if(rotation == Helper.Rotation.Rotate180)
+            return y * width * length + (length - 1 - z) * width + (width - 1 - x);
+        if(rotation == Helper.Rotation.Rotate270)
+            return y * width * length + x * width + (width - 1 - z);
+        else return 0;
     }
 }

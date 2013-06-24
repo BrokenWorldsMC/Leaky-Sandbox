@@ -27,6 +27,25 @@ public class TileSet {
         tiles.add(new Tile(this, name));
     }
 
+    public Tile getTile(String name) {
+        for(Tile t : tiles) {
+            if(t.getName().equalsIgnoreCase(name))
+                return t;
+        }
+        return null;
+    }
+
+    public List<Tile> getMatchingTiles(int entrances, int ignoredEntrances) {
+        List<Tile> matchingTiles = new ArrayList<Tile>();
+
+        for(Tile t : tiles) {
+            if(t.hasEntrance(entrances, ignoredEntrances))
+                matchingTiles.add(t);
+        }
+
+        return matchingTiles;
+    }
+
     // ==== SAVE/LOAD/CREATE ====================
 
     public void save() {
@@ -40,18 +59,23 @@ public class TileSet {
         json.defaultHeight = this.defaultHeight;
         json.defaultLength = this.defaultLength;
         json.biome = this.biome.name();
-        json.tiles = new TileJson[this.tiles.size()];
 
+        ArrayList<TileJson> jsonTiles = new ArrayList<TileJson>();
         for(int i = 0; i < this.tiles.size(); i++) {
             Tile t = this.tiles.get(i);
-            json.tiles[i] = new TileJson();
-            json.tiles[i].name = t.getName();
-            json.tiles[i].width = t.getWidth();
-            json.tiles[i].height = t.getHeight();
-            json.tiles[i].length = t.getLength();
-            json.tiles[i].entrances = t.getEntrancesString();
-            json.tiles[i].biome = t.getBiome() == null ? null : t.getBiome().name();
+            if(t.isRotatedCopy()) continue;
+
+            TileJson tJson = new TileJson();
+            tJson.name = t.getName();
+            tJson.width = t.getWidth();
+            tJson.height = t.getHeight();
+            tJson.length = t.getLength();
+            tJson.entrances = t.getEntrancesString();
+            tJson.biome = t.getBiome() == null ? null : t.getBiome().name();
+            jsonTiles.add(tJson);
         }
+        json.tiles = jsonTiles.toArray(new TileJson[jsonTiles.size()]);
+
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -95,6 +119,13 @@ public class TileSet {
                 tile.setEntrances(t.entrances);
                 tile.setBiome(t.biome == null ? null : Biome.valueOf(t.biome));
                 tileset.tiles.add(tile);
+
+                if(!tile.hasEntrance(Tile.ENTRANCE_ALL)) {
+                    Tile[] rotatedCopies = tile.getRotatedCopies();
+                    tileset.tiles.add(rotatedCopies[0]);
+                    tileset.tiles.add(rotatedCopies[1]);
+                    tileset.tiles.add(rotatedCopies[2]);
+                }
             }
 
         } catch (FileNotFoundException e) {
@@ -115,6 +146,26 @@ public class TileSet {
     // ==== getter/setter ==========================
     public String getName() {
         return name;
+    }
+
+    public File getFolder() {
+        return this.folder;
+    }
+
+    public int getDefaultWidth() {
+        return defaultWidth;
+    }
+
+    public int getDefaultHeight() {
+        return defaultHeight;
+    }
+
+    public int getDefaultLength() {
+        return defaultLength;
+    }
+
+    public List<Tile> getTiles() {
+        return tiles;
     }
 
     // ==== data classes for json ==========================

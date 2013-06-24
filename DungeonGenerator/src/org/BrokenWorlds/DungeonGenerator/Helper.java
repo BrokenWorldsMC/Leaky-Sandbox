@@ -1,14 +1,14 @@
 package org.BrokenWorlds.DungeonGenerator;
 
 public final class Helper {
-    public enum Rotation { Rotate90, Rotate180, Rotate270, Rotate360 }
+    public enum Rotation { Rotate0, Rotate90, Rotate180, Rotate270 }
 
     public static int rotateBlock(Rotation rotation, int type, int data) {
         switch (rotation) {
+            case Rotate0: return data;
             case Rotate90: return rotateBlock90(type, data);
             case Rotate180: return rotateBlock90(type, rotateBlock90(type, data));
             case Rotate270: return rotateBlock90(type, rotateBlock90(type, rotateBlock90(type, data)));
-            case Rotate360: return data;
         }
         return data;
     }
