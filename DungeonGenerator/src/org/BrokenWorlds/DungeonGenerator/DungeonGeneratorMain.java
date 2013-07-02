@@ -19,6 +19,8 @@ public class DungeonGeneratorMain extends JavaPlugin {
 
     private Map<String, TileSet> tileSets = new HashMap<String, TileSet>();
 
+    private NewGenerator generator;
+
     @Override
     public void onEnable(){
         dataFolder = getDataFolder();
@@ -117,19 +119,16 @@ public class DungeonGeneratorMain extends JavaPlugin {
             return true;
         }
         TileSet tileSet = tileSets.get(tileSetName);
-        Generator generator = new Generator(((Player) sender).getWorld(), tileSet);
 
-        boolean generated;
+        if(generator == null)
+            generator = new NewGenerator(((Player) sender).getWorld());
+
         if(args.length >= 3)
-            generated = generator.generate(args[2].hashCode());
+            generator.generate(tileSet, args[2].hashCode());
         else
-            generated = generator.generate();
+            generator.generate(tileSet);
 
-        if(generated) {
-            sender.sendMessage("generated!");
-        } else {
-            sender.sendMessage("ERROR: couldn't find fitting tiles for all places :(");
-        }
+        sender.sendMessage("generated!");
         return true;
     }
 

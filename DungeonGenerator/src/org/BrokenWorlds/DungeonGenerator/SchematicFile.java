@@ -52,16 +52,14 @@ public class SchematicFile {
     }
 
     public void pasteTo(Location location, Helper.Rotation rotation) {
-        World world = location.getWorld();
+        pasteTo(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ(), rotation);
+    }
 
-        int wX = location.getBlockX();
-        int wY = location.getBlockY();
-        int wZ = location.getBlockZ();
-
+    public void pasteTo(World world, int destinationX, int destinationY, int destinationZ, Helper.Rotation rotation) {
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 for(int z = 0; z < length; z++) {
-                    Block b = world.getBlockAt(wX + x, wY + y, wZ + z);
+                    Block b = world.getBlockAt(destinationX + x, destinationY + y, destinationZ + z);
 
                     int index = getBlockIndex(x,y,z, rotation);
                     b.setTypeIdAndData(blocks[index], data[index], false);

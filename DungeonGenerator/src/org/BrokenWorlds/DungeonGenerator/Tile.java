@@ -1,6 +1,7 @@
 package org.BrokenWorlds.DungeonGenerator;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Biome;
 
 import java.io.File;
@@ -14,11 +15,11 @@ public class Tile {
     private int entrances;
     private Biome biome;
     private Integer probability;
+    private boolean isRotatedCopy = false;
 
-    public boolean isRotatedCopy = false;
+    private Helper.Rotation rotation = Helper.Rotation.Rotate0;
 
-    public Helper.Rotation rotation = Helper.Rotation.Rotate0;
-
+    public static final int DEFAULT_PROBABILITY = 10;
 
     public static final int ENTRANCE_NONE = 0;
     public static final int ENTRANCE_NORTH = 1;
@@ -182,7 +183,7 @@ public class Tile {
     }
 
     public int getRealProbability() {
-        return probability == null ? 1 : probability;
+        return probability == null ? DEFAULT_PROBABILITY : probability;
     }
 
     public boolean isRotatedCopy() {
@@ -195,5 +196,9 @@ public class Tile {
 
     public void pasteTo(Location location) {
        getShematicFile().pasteTo(location, rotation);
+    }
+
+    public void pasteTo(World w, int x, int y, int z) {
+        getShematicFile().pasteTo(w, x,y,z, rotation);
     }
 }
